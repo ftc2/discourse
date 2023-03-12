@@ -243,6 +243,17 @@ module ImportScripts::PhpBB3::BBCode
       end
     end
 
+    def visit_MENTION(xml_node, md_node)
+      username = xml_node.content.strip
+      if @username_from_user_id
+        user_id = to_i(xml_node.attr("mention"))
+        username = @username_from_user_id.call(user_id) if user_id
+      end
+      md_node.text = username
+      md_node.prefix = "@"
+      md_node.skip_children
+    end
+
     def text(xml_node, escape_markdown: true)
       text = CGI.unescapeHTML(xml_node.text)
       # text.gsub!(/[\\`*_{}\[\]()#+\-.!~]/) { |c| "\\#{c}" } if escape_markdown
