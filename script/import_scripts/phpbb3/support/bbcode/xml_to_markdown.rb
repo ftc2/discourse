@@ -203,8 +203,13 @@ module ImportScripts::PhpBB3::BBCode
 
     def visit_YOUTUBE(xml_node, md_node)
       youtube_id = xml_node.attr("content")
-      md_node.text = "https://www.youtube.com/watch?v=" + youtube_id
-      md_node.prefix_linebreaks = md_node.postfix_linebreaks = 1
+      youtube_id = xml_node.attr("id") unless youtube_id
+      youtube_t = xml_node.attr("t")
+      if youtube_id
+        md_node.text = "https://www.youtube.com/watch?v=#{youtube_id}"
+        md_node.text += "&t=#{youtube_t}" if youtube_t
+        md_node.prefix_linebreaks = md_node.postfix_linebreaks = 1
+      end
       md_node.skip_children
     end
 
