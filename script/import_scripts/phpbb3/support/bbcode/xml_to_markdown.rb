@@ -178,9 +178,14 @@ module ImportScripts::PhpBB3::BBCode
     end
 
     def visit_YOUTUBE(xml_node, md_node)
-      youtube_id = xml_node.attr("content")
-      md_node.text = "https://www.youtube.com/watch?v=" + youtube_id
-      md_node.prefix_linebreaks = md_node.postfix_linebreaks = 1
+      params = {
+        v: xml_node.attr("id") ? xml_node.attr("id") : xml_node.attr("content"),
+        list: xml_node.attr("list"),
+        t: xml_node.attr("t")
+      }.compact
+      url_base = params.key?(:list) ?
+        "https://www.youtube.com/playlist?" : "https://www.youtube.com/watch?"
+      md_node.text = url_base + URI.encode_www_form(params)
       md_node.skip_children
     end
 
