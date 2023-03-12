@@ -96,6 +96,10 @@ module ImportScripts::PhpBB3::BBCode
       end
     end
 
+    def visit_S(xml_node, md_node)
+      md_node.enclosed_with = "~~" if xml_node.parent&.name != "S"
+    end
+
     def visit_CODE(xml_node, md_node)
       content = xml_node.content
 
@@ -110,6 +114,26 @@ module ImportScripts::PhpBB3::BBCode
       md_node.skip_children
       md_node.prefix_linebreaks = md_node.postfix_linebreaks = 2
       md_node.prefix_linebreak_type = LINEBREAK_HTML
+    end
+
+    def visit_C(xml_node, md_node)
+      visit_ICODE(xml_node, md_node)
+    end
+
+    def visit_ICODE(xml_node, md_node)
+      md_node.text = xml_node.content.strip
+      md_node.enclosed_with = "`"
+      md_node.skip_children
+    end
+
+    def visit_SUP(xml_node, md_node)
+      md_node.prefix = "<sup>"
+      md_node.postfix = "</sup>"
+    end
+
+    def visit_SUB(xml_node, md_node)
+      md_node.prefix = "<sub>"
+      md_node.postfix = "</sub>"
     end
 
     def visit_LIST(xml_node, md_node)
@@ -242,6 +266,12 @@ module ImportScripts::PhpBB3::BBCode
         md_node.prefix = "<big>"
         md_node.postfix = "</big>"
       end
+    end
+
+    def visit_HR(xml_node, md_node)
+      md_node.text = "___"
+      md_node.prefix_linebreaks = md_node.postfix_linebreaks = 1
+      md_node.skip_children
     end
 
     def visit_MENTION(xml_node, md_node)
